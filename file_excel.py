@@ -122,20 +122,8 @@ def compute_complaint_scores():
     df.columns = df.columns.astype(str).str.replace("\n", " ").str.strip()
 
     def severity_weight(val):
-     if pd.isna(val):
-        return 0  # No data = treat as 'none'
-    
-     val_str = str(val).lower().strip()
-    
-     if "major" in val_str:
-            return 2.0
-     elif "minor" in val_str:
-            return 1.0
-     elif "none" in val_str or val_str == "":
-            return 0.0
-     else:
-            return 0.5  # default for unknown category
-
+        if pd.isna(val): return 0.5
+        return 1.0 if "major" in str(val).lower() else 0.5
 
     def recall_multi(val):
         if pd.isna(val): return 1.0
