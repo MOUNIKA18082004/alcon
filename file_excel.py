@@ -26,8 +26,9 @@ sheet_ipc = "Order IPC Insp+Sample Results"
 sheet_capa = "CAPA-QN data"
 sheet_compl = "Complainnt Data"
 
-REF_DATE = pd.Timestamp("2025-10-24")
-
+#REF_DATE = pd.Timestamp("2025-10-24")
+from datetime import datetime
+REF_DATE = pd.Timestamp(datetime.now().date())
 
 # ---------------- UTILITIES ----------------
 def time_decay(age_days, half_life):
@@ -121,8 +122,20 @@ def compute_complaint_scores():
     df.columns = df.columns.astype(str).str.replace("\n", " ").str.strip()
 
     def severity_weight(val):
-        if pd.isna(val): return 0.5
-        return 1.0 if "major" in str(val).lower() else 0.5
+     if pd.isna(val):
+        return 0  # No data = treat as 'none'
+    
+     val_str = str(val).lower().strip()
+    
+     if "major" in val_str:
+            return 2.0
+     elif "minor" in val_str:
+            return 1.0
+     elif "none" in val_str or val_str == "":
+            return 0.0
+     else:
+            return 0.5  # default for unknown category
+
 
     def recall_multi(val):
         if pd.isna(val): return 1.0
